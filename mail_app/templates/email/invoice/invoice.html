@@ -1,0 +1,25 @@
+{{invoice.account.get_greeting}},<br>
+<br>
+anbei entnehmen Sie die Rechnung für Ihre Ladestation(en) für den Zeitraum {{invoice.start_date|date:"d.m.Y"}} bis {{invoice.end_date|date:"d.m.Y"}} mit Bitte um Begleichung.<br>
+Für Rückfragen stehen wir Ihnen gerne zur Verfügung.<br>
+<br>
+<br>
+Mit freundlichen Grüßen,<br>
+<br>
+Jonas Schumacher<br>
+Geschäftsführer<br>
+<br>
+<br>
+<br>
+E-Mail: <a href="mailto:jonas.schumacher@chargetic.de">jonas.schumacher@chargetic.de</a><br>
+Telefon: +49 (0) 178 3740 819<br>
+Webseite: <a href="http://www.chargetic.de/">www.chargetic.de</a> <br><br>
+{% load static %}
+<img src="{{base_url}}{% static 'ChargePointHandler/assets/images/email_visitenkarte.png' %}" alt="Visitenkarte"  moz-do-not-send="true">
+<br>
+<br>
+<b>Chargetic GmbH</b><br>
+Sitz der Gesellschaft: Karlsruhe<br>
+Registergericht: Amtsgericht Mannheim, HRB 741402<br>
+Umsatzsteuer-ID: DE347268645<br>
+Geschäftsführer: Jonas Schumacher

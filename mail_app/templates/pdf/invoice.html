@@ -1,0 +1,231 @@
+{% block head %}
+ <style>
+    aside address#from {
+        color: {{invoice.get_invoice_issuer.design.primary_color}};
+      }
+    td:last-of-type {
+        color: {{invoice.get_invoice_issuer.design.primary_color}};
+    }
+ </style>
+  {% endblock %}
+  
+<html>
+  <head>
+    <meta charset="utf-8">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital@1&display=swap" rel="stylesheet">
+
+    {% load static %}
+
+    <link rel="stylesheet" media="print" href="/static/ChargePointHandler/assets/css/invoice.css">
+    <link rel="stylesheet" type="text/css" href="/static/ChargePointHandler/assets/css/invoice.css">
+
+    <title>Invoice</title>
+    <meta name="description" content="Invoice by Chargetic">
+  </head>
+
+  <body class="">
+
+    <!--
+    <div class="row">
+      <div class="col-1">
+          1
+      </div>
+      <div class="col-1">
+          2
+      </div>
+      <div class="col-1">
+          3
+      </div>
+      <div class="col-1">
+          4
+      </div>
+      <div class="col-1">
+          5
+      </div>
+      <div class="col-1">
+          6
+      </div>
+      <div class="col-1">
+          7
+      </div>
+      <div class="col-1">
+          8
+      </div>
+      <div class="col-1">
+          9
+      </div>
+      <div class="col-1">
+          10
+      </div>
+      <div class="col-1">
+          11
+      </div>
+      <div class="col-1">
+          12
+      </div>
+    </div>
+    <br>
+    -->
+
+    <div class="row">
+      <div class="col-6">
+        {% if invoice.get_invoice_issuer.design.name != "Chargetic GmbH" %}
+         <img class="logo" id="logo1" src="https://chargetic-storage.s3.eu-west-1.amazonaws.com/ChargePointHandler/assets/images/chargetic.png"/>
+        {% endif %}
+      </div>
+     
+      <div class="col-6 align-right">
+        <img class="logo" id="logo2" src="{{ invoice.get_invoice_issuer.design.logo.url }}"/>
+      </div>
+    </div>
+
+    <!--
+    <img id="logo" src="Entwicklungsumgebung/PythonProjects/Central_System4/Central_System/ChargePointHandler/assets/images/chargetic.png" />
+    <img id="logo" src="file://Entwicklungsumgebung/PythonProjects/Central_System4/Central_System/ChargePointHandler/templates/pdf_templates/chargetic.png" />
+    <img id="logo" src="{% static 'ChargePointHandler/assets/images/chargetic.png' %}" />
+    <img id="logo" src="C:/Entwicklungsumgebung/PythonProjects/Central_System4/Central_System/ChargePointHandler/templates/pdf_templates/chargetic.png" alt="" width="300" />
+    -->
+
+    <aside>
+      <address id="from">
+        <b>{{invoice.get_invoice_issuer.name}}</b> | {{invoice.get_invoice_issuer.address.street_with_number}} | {{invoice.get_invoice_issuer.address.zip_code_with_city}}
+      </address>
+
+      <address id="to">
+        {{invoice.account.billing_address.company|default_if_none:""}}
+        {{invoice.account.user.complete_name}}
+        {{invoice.account.billing_address.street_with_number}}
+        {{invoice.account.billing_address.zip_code_with_city}}
+      </address>
+    </aside>
+
+    <div class="invoice-info">
+      <div class="row">
+        <div class="col-4">
+          <b>Betreff</b>
+          {{invoice.subject}}
+        </div>
+
+        <div class="col-3">
+          <b>Rechnungsnummer</b>
+          {{invoice.invoice_number}}
+        </div>
+
+        <div class="col-3">
+          <b>Kundennummer</b>
+          {{invoice.account.account_number}}
+        </div>
+
+        <div class="col-2 align-right">
+          <b>Datum</b>
+          {{invoice.get_date_of_issue}}
+        </div>
+      </div>
+    </div>
+    <div class="invoice-info">
+      {{invoice.intro}}
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Pos.</th>
+          <th class="left">Beschreibung</th>
+          <th>Menge</th>
+          <th>Einheit</th>
+          <th>MwSt.</th>
+          <th>Einzelpreis (Brutto)</th>
+          <th>Summe (Brutto)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% load mathfilters %}
+        {% for item_group in invoice.get_all_item_groups %}
+          <tr>
+            <td class="left"><b>{{ forloop.counter }}</b></td>
+            <td class="left"><b>{{ item_group.description }}</b></td>
+          </tr>
+          {% for item in item_group.get_all_items %}
+            <tr>
+              <td class="left">{{ forloop.parentloop.counter }}.{{ forloop.counter }}</td>
+              <td class="left">{{ item.product.description }}</td>
+              <td>{{ item.amount }}</td>
+              <td>{{ item.product.unit }}</td>
+              <td>{{ item.get_total_price.vat|mul:100| floatformat:0 }} %</td>
+              <td>{{ item.product.unit_price.incl_vat }} €</td>
+              <td>{{ item.get_total_price.incl_vat | floatformat:2 }} €</td>
+            </tr>
+          {% endfor %}
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td><b>Teilsumme:</b></td>
+            <td><b>{{ item_group.get_total_price.incl_vat | floatformat:2 }} €</b></td>
+          </tr>  
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <table id="total">
+      <thead>
+        <tr>
+          <th class="left">Zahlungsziel</th>
+          <th class="hidden">-------------</th>
+          <th></th>
+          <th>SUMME</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="left">{{invoice.due_date}}</td>
+          <td class="hidden">-------------</td>
+          <td>Netto:</td>
+          <td>{{ invoice.get_total_price.excl_vat | floatformat:2 }} €</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td class="hidden">-------------</td>
+          <td>zzgl. MwSt:</td>
+          <td>{{ invoice.get_total_price.vat_sum | floatformat:2 }} €</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td class="hidden">-------------</td>
+          <td>Gesamtpreis:</td>
+          <td>{{ invoice.get_total_price.incl_vat | floatformat:2 }} €</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="invoice-info">
+      {{invoice.outro_text}}
+    </div>
+
+    <div class="row small">
+      <div class="col-4">
+        {{invoice.get_invoice_issuer.name}}<br>
+        {{invoice.get_invoice_issuer.address.street_with_number}}<br>
+        {{invoice.get_invoice_issuer.address.zip_code_with_city}}<br>
+      </div>
+      <div class="col-4">
+        Geschäftsführer: <br> {{invoice.get_invoice_issuer.address.first_name}} {{invoice.get_invoice_issuer.address.last_name}}<br>
+        {{invoice.get_invoice_issuer.commercial_register}}<br>
+        USt-ID: {{invoice.get_invoice_issuer.ust_id}}
+      </div>
+      <div class="col-4">
+        Bankverbindung<br>
+        Bank: {{invoice.account.billing_account.name}}<br>
+        IBAN: {{invoice.account.billing_account.iban}}<br>
+        BIC: {{invoice.account.billing_account.bic}}
+      </div>
+    </div>
+
+  </body>
+
+</html>

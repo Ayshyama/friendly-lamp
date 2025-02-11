@@ -1,0 +1,80 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} UI Tables {% endblock %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <!-- [ Main Content ] start -->
+    <section class="pcoded-main-container">
+        <div class="pcoded-content">
+            <!-- [ breadcrumb ] start -->
+            <div class="page-header">
+                <div class="page-block">
+                    <div class="row align-items-center">
+                        <div class="col-md-12">
+                            <div class="page-header-title">
+                                <h5 class="m-b-10">New Project Calculation</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- [ breadcrumb ] end -->
+
+            <!-- [ Main Content ] start -->
+            <div class="row">
+                <!-- [ Hover-table ] start -->
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>xxx</h5>
+                        </div>
+
+                        <div class="card-body">
+
+                            <form role="user_form" method="post" action="">
+                                {% csrf_token %}
+
+                                <h5>Ansprechpartner</h5><br>
+                                <p></p>
+
+                                <div class="form-row">
+                                    <div class="col-md-2 mb-3">
+                                        <h6>{{ calculation_form.execution_date.label }}</h6>
+                                        {{ calculation_form.execution_date }}
+                                    </div>
+                                </div>
+                                <!--
+                                <div class="form-group">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="dsgvo1" name="dsgvo_agreed">
+                                        <h6>Ich stimme dem <a href="#">Datenschutz</a> zu</h6>
+                                        <span class="text-error">{{ profile_form.dsgvo_agreed.errors }}</span>
+                                    </div>
+                                </div>
+                                -->
+
+                                <br>
+                                <button type="submit" name="contact" class="btn  btn-primary">Weiter</button>
+                            </form>
+
+                        </div>
+
+                    </div>
+                </div>
+                <!-- [ Hover-table ] end -->
+            </div>
+            <!-- [ Main Content ] end -->
+        </div>
+    </section>
+    <!-- [ Main Content ] end -->
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+{% endblock javascripts %}
+

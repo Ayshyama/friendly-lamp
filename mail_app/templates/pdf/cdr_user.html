@@ -1,0 +1,120 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital@1&display=swap" rel="stylesheet">
+
+    {% load static %}
+    <!--
+    <link rel="stylesheet" media="print" href="/static/ChargePointHandler/assets/css/invoice.css">
+    <link rel="stylesheet" type="text/css" href="/static/ChargePointHandler/assets/css/invoice.css">
+    -->
+
+    <title>Transactions</title>
+    <meta name="description" content="Transaction overview">
+  </head>
+
+  <body class="">
+    <div class="row">
+      <div class="col-6">
+        <img class="logo" id="logo" src="https://chargetic-storage.s3.eu-west-1.amazonaws.com/ChargePointHandler/assets/images/chargetic.png"/>
+      </div>
+      <div class="col-6">
+        <h1>Ladevorgänge</h1>
+      </div>
+    </div>
+
+    <!--
+    <img id="logo" src="Entwicklungsumgebung/PythonProjects/Central_System4/Central_System/ChargePointHandler/assets/images/chargetic.png" />
+    <img id="logo" src="file://Entwicklungsumgebung/PythonProjects/Central_System4/Central_System/ChargePointHandler/templates/pdf_templates/chargetic.png" />
+    <img id="logo" src="{% static 'ChargePointHandler/assets/images/chargetic.png' %}" />
+    <img id="logo" src="C:/Entwicklungsumgebung/PythonProjects/Central_System4/Central_System/ChargePointHandler/templates/pdf_templates/chargetic.png" alt="" width="300" />
+    -->
+
+    <aside>
+      <address id="from">
+        <b>{{operator_company}}</b> | {{operator_address.street_with_number}} | {{operator_address.zip_code_with_city}}
+      </address>
+
+      <address id="to">
+        {{customer_name}}
+        {{customer_address.street_with_number}}
+        {{customer_address.zip_code_with_city}}
+      </address>
+    </aside>
+
+    <div class="invoice-info">
+      <div class="row">
+        <div class="col-3">
+          <b>von</b>
+          {{start_date}}
+        </div>
+
+        <div class="col-3">
+          <b>bis</b>
+          {{end_date}}
+        </div>
+
+        <div class="col-3">
+          <b>Kundennummer</b>
+          {{customer_id}}
+        </div>
+
+        <div class="col-3 align-right">
+          <b>erstellt</b>
+          {{date_of_creation}}
+        </div>
+      </div>
+    </div>
+    <div class="invoice-info">
+      {{intro_text}}
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Transaktion</th>
+          <th>Ladestation</th>
+          <th>Token</th>
+          <th>Start</th>
+          <th>Ende</th>
+          <th>Dauer</th>
+          <th>Energie [kWh]</th>
+          <th>Preis [€]</th>
+          <!--<th>CO2 [kg]</th>-->
+        </tr>
+      </thead>
+      <tbody>
+        {% load mathfilters %}
+        {% load datetime_filters %}
+        <tr class="bg-light-grey">
+          <td>SUMME</td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td>{{cdr_sum.total_charging_time__sum|h_to_timedelta|default_if_none:""}}</td>
+          <td>{{cdr_sum.total_energy__sum|floatformat:1}}</td>
+          <td>{{cdr_sum.total_cost__incl_vat__sum|floatformat:2}}</td>
+          <!--<td>{{transaction_sum.total_saved_emission__sum|div:1000|floatformat:1}}</td>-->
+        </tr>
+        {% for cdr, transaction in cdr_transactions %}
+        <tr>
+            <td>{{cdr.get_transaction_id}}<br/></td>
+            <td>{{cdr.cdr_location.evse_id}}<br/></td>
+            <td>{{cdr.cdr_token.uid}}<br/></td>
+            <td>{{cdr.start_date_time|short_datetime}}</td>
+            <td>{{cdr.end_date_time|short_datetime}}</td>
+            <td>{{cdr.total_charging_time|h_to_timedelta}}<br/></td>
+            <td>{{cdr.total_energy|floatformat:1}}<br/></td>
+            <td>{{cdr.total_cost.incl_vat|floatformat:2}}<br/></td>
+            <!--<td>{{transaction.total_saved_emission|div:1000|floatformat:1}}</td>-->
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+  </body>
+</html>

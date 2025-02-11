@@ -1,0 +1,541 @@
+{% extends "layouts/blank_page.html" %}
+
+{% block title %} Dashboard {% endblock %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+ <!-- [ Main Content ] start -->
+    <div class="pcoded-main-container">
+        <div class="pcoded-content">
+            <div class="row">
+                <div class="col-xl-1 col-md-6">
+                </div>
+
+                <div class="col-xl-10 col-md-6">
+                    <!-- [ alerts ] start -->
+                    {% for m in messages %}
+                        {% if m.msg and m.success %}
+                        <div class="alert alert-primary" role="alert">
+                            {{ m.msg|linebreaks }}
+                        </div>
+                        {% elif m.msg %}
+                        <div class="alert alert-warning" role="alert">
+                            {{ m.msg|linebreaks }}
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                    <!-- [ alert ] end -->
+
+                    <div class="card">
+
+                        <!-- [ card header pills ] start -->
+                        <div class="card-header">
+                            {% if next_tab == "final" %}
+
+                            {% else %}
+                            <ul class="nav nav-pills mb-1" id="pills_tab" role="tablist">
+                                <li class="nav-item">
+                                    {% if next_tab == "pills_object_tab" %}
+                                    <a class="nav-link active" id="pills_object_tab_a" data-toggle="pill" href="#pills_object_a" role="tab" aria-controls="pills_object_a" aria-selected="false">Objekt</a>
+                                    {% else %}
+                                    <a class="nav-link" id="pills_object_tab" data-toggle="pill" href="#pills_object" role="tab" aria-controls="pills_object" aria-selected="false">Objekt</a>
+                                    {% endif %}
+                                </li>
+                                <li class="nav-item">
+                                    {% if next_tab == "pills_contact_tab" %}
+                                    <a class="nav-link active" id="pills_contact_tab_a" data-toggle="pill" href="#pills_contact_a" role="tab" aria-controls="pills_contact_a" aria-selected="false">Ansprechpartner</a>
+                                    {% else %}
+                                    <a class="nav-link" id="pills_contact_tab" data-toggle="pill" href="#pills_contact" role="tab" aria-controls="pills_contact" aria-selected="false">Ansprechpartner</a>
+                                    {% endif %}
+                                </li>
+                                <li class="nav-item">
+                                    {% if next_tab == "pills_request_tab" %}
+                                    <a class="nav-link active" id="pills_request_tab_a" data-toggle="pill" href="#pills_request_a" role="tab" aria-controls="pills_request_a" aria-selected="false">Stellplätze</a>
+                                    {% else %}
+                                    <a class="nav-link" id="pills_request_tab" data-toggle="pill" href="#pills_request" role="tab" aria-controls="pills_request" aria-selected="false">Stellplätze</a>
+                                    {% endif %}
+                                </li>
+                                <li class="nav-item">
+                                    {% if next_tab == "pills_object_details_tab" %}
+                                    <a class="nav-link active" id="pills_object_details_tab_a" data-toggle="pill" href="#pills_object_details_a" role="tab" aria-controls="pills_object_details_a" aria-selected="false">Details</a>
+                                    {% else %}
+                                    <a class="nav-link" id="pills_object_details_tab" data-toggle="pill" href="#pills_object_details" role="tab" aria-controls="pills_object_details" aria-selected="false">Details</a>
+                                    {% endif %}
+                                </li>
+                                <li class="nav-item">
+                                    {% if next_tab == "pills_additional_contact_tab" %}
+                                    <a class="nav-link active" id="pills_additional_contact_tab_a" data-toggle="pill" href="#pills_additional_contact_a" role="tab" aria-controls="pills_additional_contact_a" aria-selected="false">Kontakte</a>
+                                    {% else %}
+                                    <a class="nav-link" id="pills_additional_contact_tab" data-toggle="pill" href="#pills_additional_contact" role="tab" aria-controls="pills_additional_contact" aria-selected="false">Kontakte</a>
+                                    {% endif %}
+                                </li>
+                            </ul>
+                            <hr>
+                            {% endif %}
+                        </div>
+                        <!-- [ card header pills ] end -->
+
+                        <!-- [ card body pills ] start -->
+                        <div class="card-body">
+                            {% if next_tab == "final" %}
+                                <h5>Vielen Dank!</h5>
+                                <p>Wir haben Ihre Anfrage entgegengenommen und werden diese bearbeiten.</p>
+                                <p>Sollten sich aus Ihren Angaben Rückfragen ergeben, werden wir uns bei Ihnen melden.</p>
+
+                                <br>
+                                <h5>Immer auf dem aktuellen Stand</h5>
+                                <p>Legen Sie jetzt ein <a href="https://api.chargetic.de/register/">Benutzerkonto</a> an und bleiben Sie immer auf dem aktuellen Stand über Ihr Projekt.</p>
+                                <p>Ein Account ermöglicht es Ihnen nachträglich Angaben zu ändern. Darüber hinaus profitieren Sie von vielen weiteren Funktionen der Chargetic Charging Plattform. Jetzt <a href="https://chargetic.de" target="_blank">mehr erfahren</a>!</p>
+
+                                <!--
+                                <form role="form" method="post" action="">
+                                    {% csrf_token %}
+                                    <button type="submit" name="return" class="btn  btn-primary">Ladepunkte verwalten</button>
+                                </form>
+                                -->
+
+                            {% else %}
+                            <div class="tab-content" id="pills_tabContent">
+                                {% if next_tab == "pills_object_tab" %}
+                                <div class="tab-pane fade show active" id="pills_object_a" role="tabpanel" aria-labelledby="pills_object_tab_a">
+                                {% else %}
+                                <div class="tab-pane fade" id="pills_object" role="tabpanel" aria-labelledby="pills_object_tab">
+                                {% endif %}
+
+                                    <form class="needs-validation" method="post" action="">
+                                        {% csrf_token %}
+
+                                        <h5>Ihre Immobilie</h5><br>
+                                        <br>
+
+                                        <div class="form-row">
+                                            <div class="col-md-6 mb-3">
+                                                <h6>{{ location_detail_form.name.label }}</h6>
+                                                {{ location_detail_form.name }}
+                                                <div class="invalid-feedback">
+                                                    Bitte geben Sie die Straße an.
+                                                </div>
+                                                <span class="text-error">{{ location_detail_form.name.errors }}</span>
+
+                                                <br>
+                                                <div class="form-row">
+                                                    <div class="col-md-6 mb-3">
+
+                                                        <h6>{{ location_detail_form.location_stage.label }}</h6>
+                                                        {{ location_detail_form.location_stage }}
+                                                        <div class="invalid-feedback">
+                                                            Bitte geben Sie die Straße an.
+                                                        </div>
+                                                        <span class="text-error">{{ location_detail_form.location_stage.errors }}</span>
+                                                    </div>
+                                                    <div class="col-md-6 mb-3">
+                                                        <h6>{{ location_detail_form.parking_spaces.label }}</h6>
+                                                        {{ location_detail_form.parking_spaces }}
+                                                        <div class="invalid-feedback">
+                                                            Bitte geben Sie die Straße an.
+                                                        </div>
+                                                        <span class="text-error">{{ location_detail_form.parking_spaces.errors }}</span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="existing_charging_stations" name="existing_charging_stations">
+                                                        <h6>{{ location_detail_form.existing_charging_stations.label }}</h6>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                            <div class="col-md-2 mb-3">
+                                            </div>
+
+                                            <div class="col-md-4 mb-3">
+                                                <h6>{{location_detail_form.parking_space_types.label}}</h6>
+                                                <div class="col-md-12 mb-3">
+                                                {% for value, text in location_detail_form.parking_space_types.field.choices %}
+                                                    <div class="check-form">
+                                                        <input id="id_parking_type_{{ forloop.counter0 }}" name="{{ location_detail_form.parking_space_types.name }}" type="checkbox" value="{{ value }}"{% if value in checked_parking_space_types %} checked="checked"{% endif %}>
+                                                        <label>{{ text }}</label>
+                                                    </div>
+                                                {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-row">
+                                            <div class="col-md-8 mb-3">
+                                                <h6>{{ address_form.street.label }}</h6>
+                                                {{ address_form.street }}
+                                                <div class="invalid-feedback">
+                                                    Bitte geben Sie die Straße an.
+                                                </div>
+                                                <span class="text-error">{{ address_form.street.errors }}</span>
+                                            </div>
+                                            <div class="col-md-4 mb-3">
+                                                <h6>{{ address_form.number.label }}</h6>
+                                                {{ address_form.number }}
+                                                <div class="invalid-feedback">
+                                                    Bitte geben Sie die Straße an.
+                                                </div>
+                                                <span class="text-error">{{ address_form.number.errors }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="col-md-3 mb-3">
+                                                <h6>{{ address_form.zip_code.label }}</h6>
+                                                {{ address_form.zip_code }}
+                                                <div class="invalid-feedback">
+                                                    Bitte geben Sie die Straße an.
+                                                </div>
+                                                <span class="text-error">{{ address_form.zip_code.errors }}</span>
+                                            </div>
+                                            <div class="col-md-5 mb-3">
+                                                <h6>{{ address_form.city.label }}</h6>
+                                                {{ address_form.city }}
+                                                <div class="invalid-feedback">
+                                                    Bitte geben Sie die Straße an.
+                                                </div>
+                                                <span class="text-error">{{ address_form.city.errors }}</span>
+                                            </div>
+                                            <div class="col-md-4 mb-3">
+                                                <h6>{{ address_form.country.label }}</h6>
+                                                {{ address_form.country }}
+                                                <div class="invalid-feedback">
+                                                    Bitte geben Sie das Land ein.
+                                                </div>
+                                                <span class="text-error">{{ address_form.country.errors }}</span>
+                                            </div>
+                                        </div>
+
+                                        <br>
+                                        <button type="submit" name="object" class="btn  btn-primary">Weiter</button>
+                                    </form>
+                                </div>
+
+                                {% if next_tab == "pills_contact_tab" %}
+                                <div class="tab-pane fade show active" id="pills_contact_a" role="tabpanel" aria-labelledby="pills_contact_tab_a">
+                                {% else %}
+                                <div class="tab-pane fade" id="pills_contact" role="tabpanel" aria-labelledby="pills_contact_tab">
+                                {% endif %}
+
+                                    <form role="user_form" method="post" action="">
+                                        {% csrf_token %}
+
+                                        <h5>Ansprechpartner</h5><br>
+                                        <p></p>
+
+                                        <div class="form-row">
+                                            <div class="col-md-2 mb-3">
+                                                <h6>{{ profile_form.salutation.label }}</h6>
+                                                {{ profile_form.salutation }}
+                                                <div class="invalid-feedback">
+                                                </div>
+                                                <span class="text-error">{{ profile_form.salutation.errors }}</span>
+                                            </div>
+                                            <div class="col-md-2 mb-3">
+                                                <h6>{{ user_form.role.label }}</h6>
+                                                {{ user_form.role }}
+                                                <span class="text-error">{{ user_form.role.errors }}</span>
+                                            </div>
+                                            <div class="col-md-4 mb-3">
+                                                <h6>{{ user_form.first_name.label }}</h6>
+                                                {{ user_form.first_name }}
+                                                <span class="text-error">{{ user_form.first_name.errors }}</span>
+                                            </div>
+                                            <div class="col-md-4 mb-3">
+                                                <h6>{{ user_form.last_name.label }}</h6>
+                                                {{ user_form.last_name }}
+                                                <span class="text-error">{{ user_form.last_name.errors }}</span>
+                                            </div>
+
+                                            <div class="col-md-5 mb-3">
+                                                <h6>{{ user_form.email.label }}</h6>
+                                                {{ user_form.email }}
+                                                <div class="invalid-feedback">
+                                                    Bitte geben Sie die Straße an.
+                                                </div>
+                                                <span class="text-error">{{ user_form.email.errors }}</span>
+                                            </div>
+                                            <div class="col-md-3 mb-3">
+                                                <h6>{{ profile_form.phone.label }}</h6>
+                                                {{ profile_form.phone }}
+                                                <div class="invalid-feedback">
+                                                    Bitte geben Sie die Straße an.
+                                                </div>
+                                                <span class="text-error">{{ profile_form.phone.errors }}</span>
+                                            </div>
+                                            <div class="col-md-4 mb-3">
+                                                <h6>{{ profile_form.company.label }} (optional)</h6>
+                                                {{ profile_form.company }}
+                                                <div class="invalid-feedback">
+                                                    Bitte geben Sie das Land ein.
+                                                </div>
+                                                <span class="text-error">{{ profile_form.company.errors }}</span>
+                                            </div>
+
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="dsgvo1" name="dsgvo_agreed">
+                                                <h6>Ich stimme dem <a href="#">Datenschutz</a> zu</h6>
+                                                <span class="text-error">{{ profile_form.dsgvo_agreed.errors }}</span>
+                                            </div>
+                                        </div>
+
+                                        <br>
+                                        <button type="button" name="back" class="btn  btn-secondary" onclick='Next("pills_object_tab")'>Zurück</button>
+                                        <button type="submit" name="contact" class="btn  btn-primary">Weiter</button>
+                                    </form>
+
+                                </div>
+
+                                {% if next_tab == "pills_request_tab" %}
+                                <div class="tab-pane fade show active" id="pills_request_a" role="tabpanel" aria-labelledby="pills_request_tab_a">
+                                {% else %}
+                                <div class="tab-pane fade" id="pills_request" role="tabpanel" aria-labelledby="pills_request_tab">
+                                {% endif %}
+
+                                    <form role="user_form" method="post" action="">
+                                        {% csrf_token %}
+
+                                        <h5>Ihre Anfrage</h5><br>
+                                        <p></p>
+
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <h6>{{ installation_request_form.prepared_parking_spaces.label }}</h6>
+                                                {{ installation_request_form.prepared_parking_spaces }}
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <h6>{{ installation_request_form.charging_stations.label }}</h6>
+                                                {{ installation_request_form.charging_stations }}
+                                            </div>
+                                        </div>
+
+                                        <br>
+                                        <button type="button" name="back" class="btn  btn-secondary" onclick='Next("pills_contact_tab")'>Zurück</button>
+                                        <button type="submit" name="request" class="btn  btn-primary">Weiter</button>
+                                    </form>
+                                </div>
+
+                                {% if next_tab == "pills_object_details_tab" %}
+                                <div class="tab-pane fade show active" id="pills_overview_a" role="tabpanel" aria-labelledby="pills_object_details_tab_a">
+                                {% else %}
+                                <div class="tab-pane fade" id="pills_object_details" role="tabpanel" aria-labelledby="pills_object_details_tab">
+                                {% endif %}
+                                    <form role="user_form" method="post" action="">
+                                        {% csrf_token %}
+                                        <h5>Weitere Details</h5><br>
+                                        <p></p>
+                                        <p></p>
+
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <h6>{{ location_detail_extra_form.user_group.label }}</h6>
+                                                {{ location_detail_extra_form.user_group }}
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <h6>{{ location_detail_extra_form.particularities.label }}</h6>
+                                                {{ location_detail_extra_form.particularities }}
+                                            </div>
+                                            <div class="col-md-4 mb-3">
+                                                <h6>{{ location_detail_extra_form.spare_capacity.label }}</h6>
+                                                {{ location_detail_extra_form.spare_capacity }}
+                                            </div>
+                                            <div class="col-md-4 mb-3">
+                                                <h6>{{ location_detail_extra_form.requested_capacity.label }}</h6>
+                                                {{ location_detail_extra_form.requested_capacity }}
+                                            </div>
+                                            <div class="col-md-4 mb-3">
+                                                <h6>{{ location_detail_extra_form.number_net_connections.label }}</h6>
+                                                {{ location_detail_extra_form.number_net_connections }}
+                                                <!-- bei Wohnkomplexen kann es mehr als einen Anschluss geben -->
+                                            </div>
+                                        </div>
+
+                                        <br>
+                                        <button type="button" name="back" class="btn  btn-secondary" onclick='Next("pills_request_tab")'>Zurück</button>
+                                        <button type="submit" name="details" class="btn  btn-primary">Weiter</button>
+                                    </form>
+                                </div>
+
+                                {% if next_tab == "pills_additional_contact_tab" %}
+                                <div class="tab-pane fade show active" id="pills_additional_contact_a" role="tabpanel" aria-labelledby="pills_object_details_tab_a">
+                                {% else %}
+                                <div class="tab-pane fade" id="pills_additional_contact" role="tabpanel" aria-labelledby="pills_additional_contact_tab">
+                                {% endif %}
+                                    <form role="form" method="post" action="">
+                                        {% csrf_token %}
+
+                                        <h5>Hausverwaltung</h5>
+                                        <div class="form-group">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="same_person" name="same_person">
+                                                <h6>Der Ansprechpartner ist gleich der Hausverwaltung</h6>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="col-md-2 mb-3">
+                                                <h6>{{ admin_profile_form.salutation.label }}</h6>
+                                                {{ admin_profile_form.salutation }}
+                                                <div class="invalid-feedback">
+                                                    Bitte geben Sie die Straße an.
+                                                </div>
+                                                <span class="text-error">{{ admin_profile_form.salutation.errors }}</span>
+                                            </div>
+                                            <div class="col-md-5 mb-3">
+                                                <h6>{{ admin_user_form.first_name.label }}</h6>
+                                                {{ admin_user_form.first_name }}
+                                                <div class="invalid-feedback">
+                                                    Bitte geben Sie die Straße an.
+                                                </div>
+                                                <span class="text-error">{{ admin_user_form.first_name.errors }}</span>
+                                            </div>
+                                            <div class="col-md-5 mb-3">
+                                                <h6>{{ admin_user_form.last_name.label }}</h6>
+                                                {{ admin_user_form.last_name }}
+                                                <div class="invalid-feedback">
+                                                    Bitte geben Sie die Straße an.
+                                                </div>
+                                                <span class="text-error">{{ admin_user_form.last_name.errors }}</span>
+                                            </div>
+                                            <div class="col-md-5 mb-3">
+                                                <h6>{{ admin_user_form.email.label }}</h6>
+                                                {{ admin_user_form.email }}
+                                                <div class="invalid-feedback">
+                                                    Bitte geben Sie die Straße an.
+                                                </div>
+                                                <span class="text-error">{{ admin_user_form.email.errors }}</span>
+                                            </div>
+                                            <div class="col-md-3 mb-3">
+                                                <h6>{{ admin_profile_form.phone.label }}</h6>
+                                                {{ admin_profile_form.phone }}
+                                                <div class="invalid-feedback">
+                                                    Bitte geben Sie die Straße an.
+                                                </div>
+                                                <span class="text-error">{{ admin_profile_form.phone.errors }}</span>
+                                            </div>
+                                            <div class="col-md-4 mb-3">
+                                                <h6>{{ admin_profile_form.company.label }}</h6>
+                                                {{ admin_profile_form.company }}
+                                                <div class="invalid-feedback">
+                                                    Bitte geben Sie das Land ein.
+                                                </div>
+                                                <span class="text-error">{{ admin_profile_form.company.errors }}</span>
+                                            </div>
+                                        </div>
+
+                                        <br>
+                                        <h5>Elektriker</h5>
+                                        <div class="form-group">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="specific_installer" name="specific_installer">
+                                                <h6>Ja, vorzugsweise diesen Elektriker mit der Ausführung der Installation beauftragen</h6>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="col-md-2 mb-3">
+                                                <h6>{{ installer_profile_form.salutation.label }}</h6>
+                                                {{ installer_profile_form.salutation }}
+                                                <div class="invalid-feedback">
+                                                    Bitte geben Sie die Straße an.
+                                                </div>
+                                                <span class="text-error">{{ installer_profile_form.salutation.errors }}</span>
+                                            </div>
+                                            <div class="col-md-5 mb-3">
+                                                <h6>{{ installer_user_form.first_name.label }}</h6>
+                                                {{ installer_user_form.first_name }}
+                                                <div class="invalid-feedback">
+                                                    Bitte geben Sie die Straße an.
+                                                </div>
+                                                <span class="text-error">{{ installer_user_form.first_name.errors }}</span>
+                                            </div>
+                                            <div class="col-md-5 mb-3">
+                                                <h6>{{ installer_user_form.last_name.label }}</h6>
+                                                {{ installer_user_form.last_name }}
+                                                <div class="invalid-feedback">
+                                                    Bitte geben Sie die Straße an.
+                                                </div>
+                                                <span class="text-error">{{ installer_user_form.last_name.errors }}</span>
+                                            </div>
+                                            <div class="col-md-5 mb-3">
+                                                <h6>{{ installer_user_form.email.label }}</h6>
+                                                {{ installer_user_form.email }}
+                                                <div class="invalid-feedback">
+                                                    Bitte geben Sie die Straße an.
+                                                </div>
+                                                <span class="text-error">{{ installer_user_form.email.errors }}</span>
+                                            </div>
+                                            <div class="col-md-3 mb-3">
+                                                <h6>{{ installer_profile_form.phone.label }}</h6>
+                                                {{ installer_profile_form.phone }}
+                                                <div class="invalid-feedback">
+                                                    Bitte geben Sie die Straße an.
+                                                </div>
+                                                <span class="text-error">{{ installer_profile_form.phone.errors }}</span>
+                                            </div>
+                                            <div class="col-md-4 mb-3">
+                                                <h6>{{ installer_profile_form.company.label }}</h6>
+                                                {{ installer_profile_form.company }}
+                                                <div class="invalid-feedback">
+                                                    Bitte geben Sie das Land ein.
+                                                </div>
+                                                <span class="text-error">{{ installer_profile_form.company.errors }}</span>
+                                            </div>
+                                        </div>
+
+                                        <br>
+                                        <div class="form-row">
+                                            <div class="col-md-5 mb-3">
+                                                <h5>Anfrage absenden</h5><br>
+                                            </div>
+                                            <div class="col-md-3 mb-3">
+                                                <div class="form-row">
+                                                    <div class="col-md-4 mb-3">
+                                                        {{ calculation_string }}
+                                                    </div>
+                                                    <div class="col-md-8 mb-3">
+                                                        {{ check_sum_form.result }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <button type="button" name="back" class="btn  btn-secondary" onclick='Next("pills_object_details_tab")'>Zurück</button>
+                                        <button type="submit" name="additional" class="btn  btn-primary">Absenden</button>
+
+                                    </form>
+                                </div>
+
+                            </div>
+                            {% endif %}
+                        </div>
+                        <!-- [ card body pills ] end -->
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- [ Main Content ] end -->
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+    <!-- Apex Chart -->
+    <script src="/static/assets/js/plugins/apexcharts.min.js"></script>
+    <!-- custom-chart js -->
+    <script src="/static/assets/js/pages/dashboard-main.js"></script>
+
+    <script>
+        function Next(id) {
+          document.getElementById(id).click();
+        }
+    </script>
+
+{% endblock javascripts %}

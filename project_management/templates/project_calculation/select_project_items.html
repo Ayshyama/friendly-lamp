@@ -1,0 +1,267 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} UI Tables {% endblock %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <!-- [ Main Content ] start -->
+    <section class="pcoded-main-container">
+        <div class="pcoded-content">
+            <!-- [ breadcrumb ] start -->
+            <div class="page-header">
+                <div class="page-block">
+                    <div class="row align-items-center">
+                        <div class="col-md-12">
+                            <div class="page-header-title">
+                                <h5 class="m-b-10">Select Items</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- [ breadcrumb ] end -->
+
+            <!-- [ Main Content ] start -->
+            <div class="row">
+                <!-- [ Hover-table ] start -->
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Grundinstallation</h5>
+                        </div>
+                        <div class="card-body table-border-style">
+                            <div class="table-responsive">
+                                {% for product_group in product_groups %}
+
+                                    <div class="accordion" id="{{product_group.name}}">
+                                        <p class="mb-0"><a href="#!" data-toggle="collapse" data-target=#modal{{product_group.name}} aria-expanded="true" aria-controls=modal{{product_group.name}}>{{product_group.name}}</a></p>
+                                        <div id=modal{{product_group.name}} class=" card-body collapse " aria-labelledby=heading{{product_group.name}} data-parent={{product_group.hash_name}}>
+                                            <table class="table table-hover">
+                                            <!--
+                                            {% regroup ps by product_group as pg_list %}
+                                            <p>
+                                                {{pg_list}}
+                                            </p>
+                                            {% for pg in pg_list %}
+                                                <thead>
+                                                    <tr>
+                                                        <th>Beschreibung</th>
+                                                        <th>Typ</th>
+                                                        <th>Status</th>
+                                                        <th>Nettomenge</th>
+                                                        <th>Einzelpreis</th>
+                                                        <th>Gesamtpreis</th>
+                                                        <th>save</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for product in pg.list %}
+                                                        <tr>
+                                                            <form method="post" action="">
+                                                            {% csrf_token %}
+                                                            <td><a href={{product.source}} target="_blank">{{product.internal_description_de}}</a></td>
+                                                            <td>xxx</td>
+                                                            <td>xxx</td>
+                                                            <td><input id="quantity_net" type="float" name="quantity_net" value="0"></td>
+                                                            <td>{{product.purchase_price}}</td>
+                                                            <td>xxx</td>
+                                                            <td><button type="submit" name="save_item" value={{product.pk}} class="btn  btn-primary">save</button></td>
+                                                            </form>
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            {% endfor %}
+                                            -->
+
+                                                <thead>
+                                                    <tr>
+                                                        <th style="width:33%;">Beschreibung</th>
+                                                        <th>Typ</th>
+                                                        <th>Status</th>
+                                                        <th>Nettomenge</th>
+                                                        <th>Einkaufspreis</th>
+                                                        <th>Ziel-EKP</th>
+                                                        <th>Verkaufspreis</th>
+                                                        <th>save</th>
+                                                    </tr>
+                                                </thead>
+
+                                                        <tbody>
+                                                            {% load query_filter %}
+                                                            {% load mathfilters %}
+                                                            {% for product in product_group.product_set.all %}
+                                                                {% if product.pk|is_not_in:item_ids%}
+                                                                    <tr>
+                                                                        <form method="post" action="">
+                                                                        {% csrf_token %}
+
+                                                                        <td>
+                                                                            <div class="accordion" id={{product.article_number_str}}>
+                                                                                <p class="mb-0"><a href="#!" data-toggle="collapse" data-target=#modal{{product.article_number_str}} aria-expanded="true" aria-controls=modal{{product.article_number_str}}>{{product.internal_description_de}}</a></p>
+                                                                                <div id=modal{{product.article_number_str}} class=" card-body collapse " aria-labelledby=heading{{product.article_number_str}} data-parent={{product.hash_article_number}}>
+                                                                                    <dl class="dl-horizontal row">
+                                                                                        <dt class="col-sm-6"><a href={{product.source}} target="_blank">Hersteller:</a></dt>
+                                                                                        <dd class="col-sm-6">{{product.manufacturer}}</dd>
+
+                                                                                        <dt class="col-sm-6">Art.Nr.:</dt>
+                                                                                        <dd class="col-sm-6">{{product.article_number}}</dd>
+
+                                                                                        <dt class="col-sm-6">Einheit:</dt>
+                                                                                        <dd class="col-sm-6">{{product.unite}}</dd>
+
+                                                                                        <dt class="col-sm-6">Bündel:</dt>
+                                                                                        <dd class="col-sm-6">{{product.bundle_quantity}}</dd>
+
+                                                                                        <dt class="col-sm-6">Arbeitszeit:</dt>
+                                                                                        <dd class="col-sm-6">{{product.working_time}}</dd>
+
+                                                                                        <dd class="col-sm-12">{{product.internal_description_en}}</dd>
+                                                                                    </dl>
+                                                                                </div>
+                                                                            </div>
+                                                                        </td>
+
+                                                                        <!-- <td><a href={{product.source}} target="_blank">{{product.internal_description_de}}</a></td> -->
+                                                                        <td>{{product.product_type}}</td>
+                                                                        <td>{{product.status}}</td>
+                                                                        <td hidden><input id="group" type="number" name="product_group_pk" value={{product_group.pk}}></td>
+                                                                        <td><input id="quantity_net3" type="number" name="quantity_net" value="0"></td>
+                                                                        <td>{{product.purchase_price|floatformat:2}} €</td>
+                                                                        <td>{{product.target_purchase_price|floatformat:2}} €</td>
+                                                                        <td>{{product.selling_price|floatformat:2}} €</td>
+                                                                        <td><button type="submit" name="save_item" value={{product.pk}} class="btn  btn-primary">save</button></td>
+                                                                        </form>
+                                                                    </tr>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        </tbody>
+
+                                            <!--
+                                            <tbody>
+
+                                                {% load mathfilters %}
+                                                <tr>
+                                                    <td>{{item_group.group_name}}</td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td>{{item_group.total_selling_price_margin}}</td>
+                                                </tr>
+                                                {% for product, item_form in item_choice %}
+                                                <tr>
+                                                    <form class="needs-validation" method="post" action="">
+                                                        {% csrf_token %}
+                                                        <td><a href={{product.source}} target="_blank">{{product.internal_description_de}}</a></td>
+                                                        <td>xxx</td>
+                                                        <td onchange="this.form.submit()">{{item_form.quantity_net}}</td>
+                                                        <td>{{item_form.quantity_net}}</td>
+                                                        <td>{{product.purchase_price}}</td>
+                                                        <td>{{product.purchase_price|mul:item_form.quantity_net.value}}</td>
+                                                        <td><button type="submit" name="save_item" value={{product.pk}} class="btn  btn-primary">save</button></td>
+                                                    </form>
+                                                </tr>
+                                                {% endfor %}
+
+                                                {% for item, item_form in item_selection %}
+                                                <tr>
+                                                    <form class="needs-validation" method="post" action="">
+                                                        {% csrf_token %}
+                                                        <td><a href={{item.product.source}} target="_blank">{{item.product.internal_description_de}}</a></td>
+                                                        <td>xxx</td>
+                                                        <td>xxx</td>
+                                                        <td>{{item_form.quantity_net}}</td>
+                                                        <td>{{item.product.purchase_price}}</td>
+                                                        <td>{{item.total_purchase_price}}</td>
+                                                        <td><button type="submit" name="update_item" value={{item.pk}} class="btn  btn-primary">update</button></td>
+                                                    </form>
+                                                </tr>
+                                                {% endfor %}
+
+                                            </tbody>
+                                            -->
+                                            </table>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+
+                                <table class="table table-hover">
+                                    {% load mathfilters %}
+                                    <thead>
+                                        <tr>
+                                            <th style="width:33%;">Auswahl</th>
+                                            <th>Typ</th>
+                                            <th>Nettomenge</th>
+                                            <th>Bruttomenge</th>
+                                            <th>EKP Einzel</th>
+                                            <th>EKP Gesamt</th>
+                                            <th>VKP Einzel</th>
+                                            <th>VKP Gesamt</th>
+                                            <th>save</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <th>Grundinstallation</th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th>{{main_item_group.total_purchase_price|floatformat:2}}</th>
+                                            <th></th>
+                                            <th>{{main_item_group.total_selling_price_margin|floatformat:2}}</th>
+                                            <th></th>
+                                        </tr>
+                                        {% for item in items %}
+                                            <tr>
+                                                <form class="needs-validation" method="post" action="">
+                                                    {% csrf_token %}
+                                                    <td><a href={{item.product.source}} target="_blank">{{item.product.internal_description_de}}</a></td>
+                                                    <td>{{item.product.product_type}}</td>
+                                                    <td><input id="quantity_net" type="float" name="quantity_net" value="{{ item.quantity_net }}"></td>
+                                                    <td>{{item.quantity_gross}}</td>
+                                                    <td>{{item.product.target_purchase_price|floatformat:2}} €</td>
+                                                    <td>{{item.total_purchase_price|floatformat:2}} €</td>
+                                                    <td>{{item.product.selling_price|floatformat:2}} €</td>
+                                                    <td>{{item.total_selling_price_margin|floatformat:2}} €</td>
+                                                    <td><button type="submit" name="update_item" value={{item.pk}} class="btn  btn-primary">update</button></td>
+                                                </form>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+
+                            </div>
+
+                            <form role="user_form" method="post" action="">
+                                {% csrf_token %}
+                                <button type="submit" name="pdf" class="btn  btn-primary">PDF</button>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+                <!-- [ Hover-table ] end -->
+            </div>
+            <!-- [ Main Content ] end -->
+        </div>
+    </section>
+    <!-- [ Main Content ] end -->
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+    <script language="JavaScript">
+    window.onload = function(){
+        // console.log(5 + 6);
+        document.getElementById("id_quantity_net").onchange = function(){
+            // this.form.submit();
+        };
+    }
+    </script>
+{% endblock javascripts %}
+
